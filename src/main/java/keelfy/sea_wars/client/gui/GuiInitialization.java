@@ -20,7 +20,8 @@ public class GuiInitialization implements Gui {
 	@Override
 	public void draw() {
 		GL11.glColor4f(1.0F, 0F, 1.0F, 1.0F);
-		GuiHelper.drawRect(0, 0, SW.getDisplay().getWidth(), SW.getDisplay().getHeight());
+
+		GuiHelper.drawRect(0f, 0f, 1f, 1f);
 	}
 
 	@Override

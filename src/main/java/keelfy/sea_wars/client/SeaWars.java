@@ -11,7 +11,6 @@ import org.lwjgl.opengl.GL11;
 
 import keelfy.sea_wars.client.gui.Gui;
 import keelfy.sea_wars.client.gui.GuiInitialization;
-import keelfy.sea_wars.client.gui.utils.Timer;
 import keelfy.sea_wars.client.main.Main;
 import keelfy.sea_wars.client.settings.SettingsHandler;
 
@@ -67,8 +66,6 @@ public final class SeaWars {
 		this.display.setSize(settings.getVideo().getWidth(), settings.getVideo().getHeight());
 		this.display.init();
 
-		this.settings.init();
-
 		GL.createCapabilities();
 
 		this.currentGUI = new GuiInitialization();
@@ -76,17 +73,15 @@ public final class SeaWars {
 		double frameCap = 1.0 / settings.getVideo().getFramesLimit();
 		double frameTime = 0;
 		int frames = 0;
-		double time = Timer.getTime();
+		double time = GLFW.glfwGetTime();
 		double unprocessed = 0;
 		double time2;
 		double passed;
 		boolean canRender = false;
 
-		this.settings.postInit();
-
 		SeaWars.getLogger().info("Starting game loop...");
 		while (!display.shouldClose()) {
-			time2 = Timer.getTime();
+			time2 = GLFW.glfwGetTime();
 			passed = time2 - time;
 			unprocessed += passed;
 			frameTime += passed;
