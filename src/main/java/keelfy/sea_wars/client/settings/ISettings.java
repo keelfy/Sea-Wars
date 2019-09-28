@@ -3,7 +3,9 @@ package keelfy.sea_wars.client.settings;
 /**
  * @author keelfy
  */
-public interface ISettingsHandler {
+public interface ISettings {
+
+	public void load();
 
 	public void reload();
 

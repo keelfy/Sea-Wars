@@ -22,11 +22,6 @@ public final class DisplayHandler {
 	private int width;
 	private int height;
 
-	public DisplayHandler(int width, int height) {
-		this.width = width;
-		this.height = height;
-	}
-
 	void init() {
 		GLFW.glfwDefaultWindowHints();
 		GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
@@ -91,6 +86,11 @@ public final class DisplayHandler {
 
 	public void close() {
 		GLFW.glfwSetWindowShouldClose(window, true);
+	}
+
+	public void setSize(int width, int height) {
+		this.width = width;
+		this.height = height;
 	}
 
 	public int getHeight() {

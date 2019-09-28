@@ -13,6 +13,7 @@ import keelfy.sea_wars.client.gui.Gui;
 import keelfy.sea_wars.client.gui.GuiInitialization;
 import keelfy.sea_wars.client.gui.utils.Timer;
 import keelfy.sea_wars.client.main.Main;
+import keelfy.sea_wars.client.settings.SettingsHandler;
 
 /**
  * @author keelfy
@@ -39,34 +40,40 @@ public final class SeaWars {
 	}
 
 	private DisplayHandler display;
-
+	private SettingsHandler settings;
 	private Gui currentGUI;
 
 	public SeaWars() {
 		instance = this;
-		dataFolder = new File("./");
-		logger.info(dataFolder.toString());
+		dataFolder = new File("");
 
-		display = new DisplayHandler(640, 480);
+		settings = new SettingsHandler(dataFolder);
+
+		display = new DisplayHandler();
 	}
 
 	/**
 	 * Called from {@link Main}
 	 */
 	public void start() {
-		this.currentGUI = new GuiInitialization();
-
 		GLFWErrorCallback.createPrint(System.err).set();
 
 		if (!GLFW.glfwInit()) {
 			throw new IllegalStateException("Unnable to initialize GLFW");
 		}
 
+		this.settings.preInit();
+
+		this.display.setSize(settings.getVideo().getWidth(), settings.getVideo().getHeight());
 		this.display.init();
+
+		this.settings.init();
 
 		GL.createCapabilities();
 
-		double frameCap = 1.0 / 60.0;
+		this.currentGUI = new GuiInitialization();
+
+		double frameCap = 1.0 / settings.getVideo().getFramesLimit();
 		double frameTime = 0;
 		int frames = 0;
 		double time = Timer.getTime();
@@ -74,6 +81,8 @@ public final class SeaWars {
 		double time2;
 		double passed;
 		boolean canRender = false;
+
+		this.settings.postInit();
 
 		SeaWars.getLogger().info("Starting game loop...");
 		while (!display.shouldClose()) {
@@ -154,5 +163,9 @@ public final class SeaWars {
 
 	public DisplayHandler getDisplay() {
 		return display;
+	}
+
+	public SettingsHandler getSettings() {
+		return settings;
 	}
 }
