@@ -1,18 +1,14 @@
-package keelfy.sea_wars.client.display;
+package keelfy.sea_wars.client;
 
 import java.nio.IntBuffer;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
-import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
-
-import keelfy.sea_wars.client.SeaWars;
 
 /**
  * @author keelfy
@@ -21,49 +17,22 @@ public final class DisplayHandler {
 
 	private static final String TITLE = "Sea Wars";
 
-	private final SeaWars seaWars;
 	private long window;
 
 	private int width;
 	private int height;
 
-	public DisplayHandler(SeaWars seaWars, int width, int height) {
-		this.seaWars = seaWars;
+	public DisplayHandler(int width, int height) {
 		this.width = width;
 		this.height = height;
 	}
 
-	public void createAndStartLoop() {
-		init();
-		loop();
-
-		Callbacks.glfwFreeCallbacks(window);
-		GLFW.glfwDestroyWindow(window);
-		SeaWars.getLogger().info("Window destroyed");
-
-		this.seaWars.cleanUp();
-		SeaWars.getLogger().info("Memory cleaned up");
-
-		GLFW.glfwTerminate();
-		GLFW.glfwSetErrorCallback(null).free();
-	}
-
-	private void init() {
-		GLFWErrorCallback.createPrint(System.err).set();
-
-		if (!GLFW.glfwInit()) {
-			throw new IllegalStateException("Unnable to initialize GLFW");
-		}
-
+	void init() {
 		GLFW.glfwDefaultWindowHints();
 		GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
 		GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_TRUE);
 
-		window = GLFW.glfwCreateWindow(width, height, TITLE, MemoryUtil.NULL, MemoryUtil.NULL);
-		if (window == MemoryUtil.NULL) {
-			throw new RuntimeException("Failed to create the GLFW window");
-		}
-		SeaWars.getLogger().info("Window created");
+		this.createWindow();
 
 		GLFW.glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
 			if (key == GLFW.GLFW_KEY_ESCAPE && action == GLFW.GLFW_RELEASE)
@@ -83,27 +52,41 @@ public final class DisplayHandler {
 
 		GLFW.glfwMakeContextCurrent(window);
 		GLFW.glfwSwapInterval(1);
-
 		GLFW.glfwShowWindow(window);
+		SeaWars.getLogger().info("Window created");
 	}
 
-	private void loop() {
-		GL.createCapabilities();
-
-		SeaWars.getLogger().info("Starting game loop...");
-		while (!GLFW.glfwWindowShouldClose(window)) {
-			GLFW.glfwPollEvents();
-
-			IntBuffer widthBuffer = BufferUtils.createIntBuffer(1);
-			IntBuffer heightBuffer = BufferUtils.createIntBuffer(1);
-			GLFW.glfwGetWindowSize(window, widthBuffer, heightBuffer);
-
-			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-
-			this.seaWars.draw();
-
-			GLFW.glfwSwapBuffers(window);
+	void createWindow() throws RuntimeException {
+		window = GLFW.glfwCreateWindow(width, height, TITLE, MemoryUtil.NULL, MemoryUtil.NULL);
+		if (window == MemoryUtil.NULL) {
+			throw new RuntimeException("Failed to create the GLFW window");
 		}
+	}
+
+	void update() {
+		IntBuffer widthBuffer = BufferUtils.createIntBuffer(1);
+		IntBuffer heightBuffer = BufferUtils.createIntBuffer(1);
+		GLFW.glfwGetWindowSize(window, widthBuffer, heightBuffer);
+		width = widthBuffer.get(0);
+		height = heightBuffer.get(0);
+		GL11.glViewport(0, 0, width, height);
+	}
+
+	void swapBuffers() {
+		GLFW.glfwSwapBuffers(window);
+	}
+
+	boolean shouldClose() {
+		return GLFW.glfwWindowShouldClose(window);
+	}
+
+	void destroy() {
+		Callbacks.glfwFreeCallbacks(window);
+		GLFW.glfwDestroyWindow(window);
+	}
+
+	public boolean isKeyPressed(int keyId) {
+		return GLFW.glfwGetKey(window, keyId) == GLFW.GLFW_TRUE;
 	}
 
 	public void close() {
@@ -116,5 +99,9 @@ public final class DisplayHandler {
 
 	public int getWidth() {
 		return width;
+	}
+
+	public long getWindow() {
+		return window;
 	}
 }
