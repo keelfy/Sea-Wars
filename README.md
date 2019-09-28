@@ -8,7 +8,7 @@
 
 ## Стэк технологий
  - Java Core
- - Java EE
+ - Java SE
  - JUnit
  - LWJGL 3
  - Jackson JSON
