@@ -1,0 +1,39 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'eclipse'
+}
+
+mainClassName = 'keelfy.sea_wars.Main'
+group = 'keelfy.sea_wars'
+version = '1.0.0.0'
+description = 'Sea Wars Game'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+tasks.withType(JavaCompile) {
+	options.encoding = 'UTF-8'
+}
+
+repositories {
+    jcenter()
+
+    maven {
+    	url 'https://oss.sonatype.org/content/repositories/snapshots/'
+    }
+}
+
+dependencies {
+    compile 'org.lwjgl:lwjgl:3.2.3-SNAPSHOT'
+    compile 'org.lwjgl:lwjgl-glfw:3.2.3-SNAPSHOT'
+    compile 'org.lwjgl:lwjgl-opengl:3.2.3-SNAPSHOT'
+    compile 'org.lwjgl:lwjgl-stb:3.2.3-SNAPSHOT'
+    compile 'org.lwjgl:lwjgl:3.2.3-SNAPSHOT:natives-windows'
+    compile 'org.lwjgl:lwjgl-opengl:3.2.3-SNAPSHOT:natives-windows'
+    compile 'org.lwjgl:lwjgl-glfw:3.2.3-SNAPSHOT:natives-windows'
+    compile 'org.lwjgl:lwjgl-stb:3.2.3-SNAPSHOT:natives-windows'
+
+    compile 'org.apache.commons:commons-math3:3.6.1'
+    implementation 'com.google.guava:guava:28.0-jre'
+    testImplementation 'junit:junit:4.12'
+}
