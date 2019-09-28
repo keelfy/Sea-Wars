@@ -1,5 +1,7 @@
 package keelfy.sea_wars.client;
 
+import java.io.File;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
@@ -22,6 +24,7 @@ public final class SeaWars {
 
 	private static SeaWars instance;
 	private static Logger logger = LogManager.getLogger(NAME);
+	private static File dataFolder;
 
 	public static SeaWars getInstance() {
 		return instance;
@@ -31,12 +34,18 @@ public final class SeaWars {
 		return logger;
 	}
 
+	public static File getDataFolder() {
+		return dataFolder;
+	}
+
 	private DisplayHandler display;
 
 	private Gui currentGUI;
 
 	public SeaWars() {
 		instance = this;
+		dataFolder = new File("./");
+		logger.info(dataFolder.toString());
 
 		display = new DisplayHandler(640, 480);
 	}
@@ -78,10 +87,6 @@ public final class SeaWars {
 			while (unprocessed >= frameCap) {
 				unprocessed -= frameCap;
 				canRender = true;
-
-				if (display.isKeyPressed(GLFW.GLFW_KEY_ESCAPE)) {
-					display.close();
-				}
 
 				GLFW.glfwPollEvents();
 
