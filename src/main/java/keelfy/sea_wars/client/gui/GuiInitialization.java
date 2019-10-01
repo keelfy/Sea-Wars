@@ -1,7 +1,6 @@
 package keelfy.sea_wars.client.gui;
 
-import org.lwjgl.opengl.GL11;
-
+import keelfy.sea_wars.client.DisplayHandler;
 import keelfy.sea_wars.client.SeaWars;
 import keelfy.sea_wars.client.gui.utils.GuiHelper;
 
@@ -18,10 +17,17 @@ public class GuiInitialization implements Gui {
 	}
 
 	@Override
-	public void draw() {
-		GL11.glColor4f(1.0F, 0F, 1.0F, 1.0F);
+	public void draw(double mouseX, double mouseY) {
+		DisplayHandler display = SeaWars.getInstance().getDisplay();
 
-		GuiHelper.drawRect(0f, 0f, 1f, 1f);
+//		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		GuiHelper.drawRect(0, 0, display.getWidth(), display.getHeight(), 0xFFFFFF);
+
+		double size = 20;
+//		GL11.glColor4f(1.0F, 0.0F, 0.0F, 1.0F);
+		GuiHelper.drawRect(0, 0, 50, display.getHeight(), 0xFF00FF);
+
+		GuiHelper.drawRect(mouseX, mouseY, size, size, 0xFF00FF);
 	}
 
 	@Override

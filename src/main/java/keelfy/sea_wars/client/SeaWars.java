@@ -125,8 +125,10 @@ public final class SeaWars {
 	public void draw() {
 		GL11.glPushMatrix();
 
-		if (this.currentGUI != null)
-			this.currentGUI.draw();
+		if (this.currentGUI != null) {
+			double[] mousePosition = display.getMousePosition();
+			this.currentGUI.draw(mousePosition[0], mousePosition[1]);
+		}
 
 		GL11.glPopMatrix();
 	}

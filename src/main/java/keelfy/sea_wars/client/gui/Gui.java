@@ -7,7 +7,7 @@ public interface Gui {
 
 	public void init();
 
-	public void draw();
+	public void draw(double mouseX, double mouseY);
 
 	public void onClose();
 }

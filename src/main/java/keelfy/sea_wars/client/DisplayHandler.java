@@ -1,5 +1,6 @@
 package keelfy.sea_wars.client;
 
+import java.nio.DoubleBuffer;
 import java.nio.IntBuffer;
 
 import org.lwjgl.BufferUtils;
@@ -42,7 +43,8 @@ public final class DisplayHandler {
 
 			GLFWVidMode vidmode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
 
-			GLFW.glfwSetWindowPos(window, (vidmode.width() - pWidth.get(0)) / 2, (vidmode.height() - pHeight.get(0)) / 2);
+			GLFW.glfwSetWindowPos(window, (vidmode.width() - pWidth.get(0)) / 2,
+					(vidmode.height() - pHeight.get(0)) / 2);
 		}
 
 		GLFW.glfwMakeContextCurrent(window);
@@ -65,6 +67,10 @@ public final class DisplayHandler {
 		width = widthBuffer.get(0);
 		height = heightBuffer.get(0);
 		GL11.glViewport(0, 0, width, height);
+
+		double aspectRatio = (double) this.width / (double) this.height;
+		GL11.glLoadIdentity();
+		GL11.glOrtho(aspectRatio, width, height, 0, 1, -1);
 	}
 
 	void swapBuffers() {
@@ -84,6 +90,16 @@ public final class DisplayHandler {
 		return GLFW.glfwGetKey(window, keyId) == GLFW.GLFW_TRUE;
 	}
 
+	public double[] getMousePosition() {
+		DoubleBuffer x = BufferUtils.createDoubleBuffer(1);
+		DoubleBuffer y = BufferUtils.createDoubleBuffer(1);
+		GLFW.glfwGetCursorPos(window, x, y);
+		double[] position = new double[2];
+		position[0] = x.get();
+		position[1] = y.get();
+		return position;
+	}
+
 	public void close() {
 		GLFW.glfwSetWindowShouldClose(window, true);
 	}
@@ -93,15 +109,19 @@ public final class DisplayHandler {
 		this.height = height;
 	}
 
-	public int getHeight() {
+	public double getHeight() {
 		return height;
 	}
 
-	public int getWidth() {
+	public double getWidth() {
 		return width;
 	}
 
 	public long getWindow() {
 		return window;
+	}
+
+	public double getAspectRatio() {
+		return this.getWidth() / this.height;
 	}
 }
