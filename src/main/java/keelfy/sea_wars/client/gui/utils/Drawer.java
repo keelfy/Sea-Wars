@@ -1,5 +1,7 @@
 package keelfy.sea_wars.client.gui.utils;
 
+import java.awt.Color;
+
 import org.lwjgl.opengl.GL11;
 
 public class Drawer {
@@ -12,12 +14,8 @@ public class Drawer {
 		GL11.glColor4f(red, green, blue, alpha);
 	}
 
-	public void setColor(int color) {
-		int blue = color & 255;
-		int green = (color >> 8) & 255;
-		int red = (color >> 16) & 255;
-
-		GL11.glColor4i(red, green, blue, 255);
+	public void setColor(Color color) {
+		GL11.glColor4f(color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F, color.getAlpha() / 255F);
 	}
 
 	public void addVertex(double x, double y) {

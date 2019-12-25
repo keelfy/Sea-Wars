@@ -26,14 +26,12 @@ public final class DisplayHandler {
 	void init() {
 		GLFW.glfwDefaultWindowHints();
 		GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
-		GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_TRUE);
+		GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_FALSE);
 
 		this.createWindow();
 
-		GLFW.glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
-			if (key == GLFW.GLFW_KEY_ESCAPE && action == GLFW.GLFW_RELEASE)
-				GLFW.glfwSetWindowShouldClose(window, true);
-		});
+		GLFW.glfwSetKeyCallback(window, SeaWars.getInstance().getKeyboard());
+		GLFW.glfwSetMouseButtonCallback(window, SeaWars.getInstance().getMouse());
 
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			IntBuffer pWidth = stack.mallocInt(1);
@@ -43,8 +41,7 @@ public final class DisplayHandler {
 
 			GLFWVidMode vidmode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
 
-			GLFW.glfwSetWindowPos(window, (vidmode.width() - pWidth.get(0)) / 2,
-					(vidmode.height() - pHeight.get(0)) / 2);
+			GLFW.glfwSetWindowPos(window, (vidmode.width() - pWidth.get(0)) / 2, (vidmode.height() - pHeight.get(0)) / 2);
 		}
 
 		GLFW.glfwMakeContextCurrent(window);
@@ -109,11 +106,11 @@ public final class DisplayHandler {
 		this.height = height;
 	}
 
-	public double getHeight() {
+	public int getHeight() {
 		return height;
 	}
 
-	public double getWidth() {
+	public int getWidth() {
 		return width;
 	}
 

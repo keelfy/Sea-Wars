@@ -2,17 +2,23 @@ package keelfy.sea_wars.client;
 
 import java.io.File;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 
-import keelfy.sea_wars.client.gui.Gui;
-import keelfy.sea_wars.client.gui.GuiInitialization;
+import keelfy.sea_wars.client.gui.GraphicalUI;
+import keelfy.sea_wars.client.gui.MainMenuGUI;
+import keelfy.sea_wars.client.gui.font.Fonts;
+import keelfy.sea_wars.client.input.KeyboardHandler;
+import keelfy.sea_wars.client.input.MouseHandler;
 import keelfy.sea_wars.client.main.Main;
+import keelfy.sea_wars.client.player.ClientPlayer;
 import keelfy.sea_wars.client.settings.SettingsHandler;
+import keelfy.sea_wars.common.network.NetworkManager;
+import keelfy.sea_wars.server.SeaWarsServer;
 
 /**
  * @author keelfy
@@ -23,7 +29,7 @@ public final class SeaWars {
 	public static final String VERSION = "1.0.0.0";
 
 	private static SeaWars instance;
-	private static Logger logger = LogManager.getLogger(NAME);
+	private static Logger logger = Logger.getLogger(SeaWars.class.getSimpleName());
 	private static File dataFolder;
 
 	public static SeaWars getInstance() {
@@ -38,65 +44,95 @@ public final class SeaWars {
 		return dataFolder;
 	}
 
-	private DisplayHandler display;
-	private SettingsHandler settings;
-	private Gui currentGUI;
+	private final DisplayHandler displayHandler;
+	private final SettingsHandler settingsHandler;
+	private final KeyboardHandler keyboardHandler;
+	private final MouseHandler mouseHandler;
+	private GraphicalUI currentGUI;
+
+	private String username;
+	private ClientPlayer player;
+	private NetworkManager networkManager;
 
 	public SeaWars() {
 		instance = this;
 		dataFolder = new File("");
 
-		settings = new SettingsHandler(dataFolder);
+		this.displayHandler = new DisplayHandler();
+		this.settingsHandler = new SettingsHandler(dataFolder);
+		this.keyboardHandler = new KeyboardHandler(this);
+		this.mouseHandler = new MouseHandler(this);
 
-		display = new DisplayHandler();
+		String param = System.getProperty("username");
+		this.username = param == null ? "Player" : param;
 	}
 
 	/**
 	 * Called from {@link Main}
 	 */
 	public void start() {
+		PropertyConfigurator.configure(SeaWarsServer.class.getResourceAsStream("../log4j.properties"));
+
 		GLFWErrorCallback.createPrint(System.err).set();
 
 		if (!GLFW.glfwInit()) {
 			throw new IllegalStateException("Unnable to initialize GLFW");
 		}
 
-		this.settings.preInit();
+		this.settingsHandler.preInit();
 
-		this.display.setSize(settings.getVideo().getWidth(), settings.getVideo().getHeight());
-		this.display.init();
+		this.displayHandler.setSize(settingsHandler.getVideo().getWidth(), settingsHandler.getVideo().getHeight());
+		this.displayHandler.init();
+
+		this.openGUI(new MainMenuGUI(this));
 
 		GL.createCapabilities();
 
-		this.currentGUI = new GuiInitialization();
-
-		double frameCap = 1.0 / settings.getVideo().getFramesLimit();
+		double frameCap = 1.0 / settingsHandler.getVideo().getFramesLimit();
 		double frameTime = 0;
 		int frames = 0;
 		double time = GLFW.glfwGetTime();
 		double unprocessed = 0;
-		double time2;
-		double passed;
 		boolean canRender = false;
+		int lastKnownFrames = frames;
+
+		long startTime = System.currentTimeMillis();
+		long timeAlive = 0L;
 
 		SeaWars.getLogger().info("Starting game loop...");
-		while (!display.shouldClose()) {
-			time2 = GLFW.glfwGetTime();
-			passed = time2 - time;
+		while (!displayHandler.shouldClose()) {
+			double time2 = GLFW.glfwGetTime();
+			double passed = time2 - time;
 			unprocessed += passed;
 			frameTime += passed;
 
 			time = time2;
 
+			long currentTime = System.currentTimeMillis();
+			long timeAfterLastLoop = currentTime - startTime;
+
+			if (timeAfterLastLoop < 0L) {
+				logger.warn("Time ran backwards");
+				timeAfterLastLoop = 0L;
+			}
+
+			timeAlive += timeAfterLastLoop;
+			startTime = currentTime;
+
+			GLFW.glfwPollEvents();
+
+			if (timeAlive > 50L) {
+				timeAlive = 0;
+				this.tick();
+			}
+
 			while (unprocessed >= frameCap) {
 				unprocessed -= frameCap;
 				canRender = true;
 
-				GLFW.glfwPollEvents();
-
 				if (frameTime >= 1.0) {
 					frameTime = 0;
-					logger.info("FPS: " + frames);
+					lastKnownFrames = frames;
 					frames = 0;
 				}
 			}
@@ -104,33 +140,44 @@ public final class SeaWars {
 			if (!canRender)
 				continue;
 
-			display.update();
+			int lastWidth = displayHandler.getWidth();
+			int lastHeight = displayHandler.getHeight();
+
+			displayHandler.update();
+
+			if (lastWidth != displayHandler.getWidth() || lastHeight != displayHandler.getHeight())
+				this.currentGUI.init();
 
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
+			if (!Fonts.isLoaded())
+				Fonts.create();
+
 			draw();
 
-			display.swapBuffers();
+			displayHandler.swapBuffers();
 
 			frames++;
 		}
 
-		this.display.destroy();
+		this.displayHandler.destroy();
 		this.cleanUp();
+	}
+
+	public void tick() {
+		if (currentGUI != null) {
+			this.currentGUI.update();
+		}
 	}
 
 	/**
 	 * Called from {@link DisplayHandler}
 	 */
 	public void draw() {
-		GL11.glPushMatrix();
-
 		if (this.currentGUI != null) {
-			double[] mousePosition = display.getMousePosition();
+			double[] mousePosition = displayHandler.getMousePosition();
 			this.currentGUI.draw(mousePosition[0], mousePosition[1]);
 		}
-
-		GL11.glPopMatrix();
 	}
 
 	/**
@@ -146,23 +193,72 @@ public final class SeaWars {
 		}
 	}
 
-	public Gui getCurrentGUI() {
+	public void exit() {
+		logger.info("Exiting...");
+
+		if (this.networkManager != null) {
+			this.networkManager.closeChannel("Disconnect by user");
+		}
+		this.displayHandler.close();
+	}
+
+	public GraphicalUI getCurrentGUI() {
 		return currentGUI;
 	}
 
-	public void openGUI(Gui gui) {
+	public void openGUI(GraphicalUI gui) {
+		if (gui == null) {
+			gui = new MainMenuGUI(this);
+		}
+
 		if (this.currentGUI != null) {
 			this.currentGUI.onClose();
 		}
 
 		this.currentGUI = gui;
+
+		if (this.currentGUI != null) {
+			this.currentGUI.init();
+		}
+	}
+
+	public void setNetworkManager(NetworkManager networkManager) {
+		this.networkManager = networkManager;
+	}
+
+	public NetworkManager getNetworkManager() {
+		return networkManager;
 	}
 
 	public DisplayHandler getDisplay() {
-		return display;
+		return displayHandler;
 	}
 
 	public SettingsHandler getSettings() {
-		return settings;
+		return settingsHandler;
+	}
+
+	public KeyboardHandler getKeyboard() {
+		return keyboardHandler;
+	}
+
+	public MouseHandler getMouse() {
+		return mouseHandler;
+	}
+
+	public void setPlayer(ClientPlayer player) {
+		this.player = player;
+	}
+
+	public ClientPlayer getPlayer() {
+		return player;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
 }
