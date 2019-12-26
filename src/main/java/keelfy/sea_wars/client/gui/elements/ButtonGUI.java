@@ -47,7 +47,7 @@ public class ButtonGUI implements IElementGUI {
 		boolean mouseOver = isMouseOver(mouseX, mouseY);
 
 		GUIHelper.drawRect(x, y, width, height, getColor(mouseOver));
-		Fonts.drawCenteredString(text, x + width / 2, y + 4, mouseOver ? HOVER_TEXT : TEXT);
+		Fonts.drawCenteredString(text, x + width / 2, y + 4, enabled && mouseOver ? HOVER_TEXT : Color.WHITE);
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public class ButtonGUI implements IElementGUI {
 
 	public Color getColor(boolean mouseOver) {
 		if (!enabled)
-			return Color.BLACK;
+			return Color.DARK_GRAY;
 
 		return mouseOver ? HOVER_COLOR : COLOR;
 	}

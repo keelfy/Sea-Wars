@@ -41,7 +41,7 @@ public class SPacketLogout extends Packet {
 
 	@Override
 	public void processPacket(INetHandler netHandler) {
-		this.processPacket(netHandler);
+		this.processPacket((INetHandlerLoginClient) netHandler);
 	}
 
 	public String getReason() {

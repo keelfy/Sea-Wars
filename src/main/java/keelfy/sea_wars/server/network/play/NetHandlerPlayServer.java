@@ -8,8 +8,13 @@ import keelfy.sea_wars.common.network.EnumConnectionState;
 import keelfy.sea_wars.common.network.NetworkManager;
 import keelfy.sea_wars.common.network.packet.Packet;
 import keelfy.sea_wars.common.network.packet.play.client.CPacketAlive;
+import keelfy.sea_wars.common.network.packet.play.client.CPacketGameStage;
+import keelfy.sea_wars.common.network.packet.play.client.CPacketShipPlace;
 import keelfy.sea_wars.common.network.packet.play.server.SPacketAlive;
 import keelfy.sea_wars.common.network.packet.play.server.SPacketDisconnect;
+import keelfy.sea_wars.common.network.packet.play.server.SPacketLeaveGame;
+import keelfy.sea_wars.common.world.EnumGameStage;
+import keelfy.sea_wars.common.world.Field.CellState;
 import keelfy.sea_wars.server.SeaWarsServer;
 import keelfy.sea_wars.server.ServerPlayer;
 
@@ -48,7 +53,7 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer {
 			this.sendPacket(new SPacketAlive(this.aliveSendTimeInt));
 		}
 
-		int idleTimeout = 2 * 60 * 1000; // 2 minutes
+		int idleTimeout = 30 * 60 * 1000; // 30 minutes
 		if (this.player.getLastActionTime() > 0L && System.currentTimeMillis() - this.player.getLastActionTime() > idleTimeout) {
 			this.kickPlayerFromServer("You have been idle for too long!");
 		}
@@ -69,17 +74,45 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer {
 
 		Iterator<ServerPlayer> it = this.server.getPlayers().iterator();
 		while (it.hasNext()) {
-			if (player.getName().equals(it.next().getName())) {
+			ServerPlayer next = it.next();
+			server.getWorld().getFields().remove(player.getSide());
+			if (player.getName().equals(next.getName())) {
 				it.remove();
+			} else {
+				next.getNetHandler().sendPacket(new SPacketLeaveGame(player.getName()));
 			}
 		}
 	}
 
 	@Override
-	public void processAlive(CPacketAlive packet) {
+	public void handleAlive(CPacketAlive packet) {
 		if (packet.sendTime() == this.aliveSendTimeInt) {
 			int difference = (int) (getTime() - this.aliveSendTime);
 			this.player.setPing((this.player.getPing() * 3 + difference) / 4);
+		}
+	}
+
+	@Override
+	public void handleGameStage(CPacketGameStage packet) {
+		if (packet.getGameStage() == EnumGameStage.READY) {
+			server.getWorld().setReady(player.getSide(), true);
+
+			if (server.getWorld().isReady()) {
+				server.getWorld().setGameStage(EnumGameStage.READY);
+				this.sendPacket(new CPacketGameStage(EnumGameStage.READY));
+			}
+		}
+	}
+
+	@Override
+	public void handleShipPlace(CPacketShipPlace packet) {
+		int lengthX = !packet.isVertically() ? packet.getShipType().getLength() : 1;
+		int lengthY = packet.isVertically() ? packet.getShipType().getLength() : 1;
+
+		for (int i = 0; i < lengthX; i++) {
+			for (int j = 0; j < lengthY; j++) {
+				server.getWorld().getField(player.getSide()).setCellState(packet.getStartX() + i, packet.getStartY() + j, CellState.SHIP);
+			}
 		}
 	}
 

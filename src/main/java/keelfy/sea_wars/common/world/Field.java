@@ -24,6 +24,10 @@ public class Field {
 		return cells[i][j];
 	}
 
+	public void setCellState(int i, int j, CellState state) {
+		cells[i][j] = state;
+	}
+
 	public static enum CellState {
 		SHIP, HIT, MISS, NONE;
 	}

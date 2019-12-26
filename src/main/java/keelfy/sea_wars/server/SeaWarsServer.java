@@ -19,6 +19,16 @@ public class SeaWarsServer {
 
 	private static final Logger logger = Logger.getLogger(SeaWarsServer.class.getSimpleName());
 
+	private static SeaWarsServer server;
+
+	public static SeaWarsServer getServer() {
+		return server;
+	}
+
+	public static Logger getLogger() {
+		return logger;
+	}
+
 	private boolean serverRunning = true;
 
 	private int port;
@@ -28,6 +38,8 @@ public class SeaWarsServer {
 	private List<ServerPlayer> players;
 
 	public SeaWarsServer(int port) {
+		server = this;
+
 		this.port = port;
 		this.network = new NetworkSystem(this);
 		this.players = new ArrayList<ServerPlayer>();

@@ -15,7 +15,7 @@ public class World {
 	private boolean[] ready;
 
 	public World() {
-		this.gameStage = EnumGameStage.READY;
+		this.gameStage = EnumGameStage.PREPARATION;
 		this.fields = new HashMap<WorldSide, Field>();
 		this.ready = new boolean[WorldSide.values().length];
 		Arrays.fill(ready, false);
@@ -29,12 +29,20 @@ public class World {
 		return gameStage;
 	}
 
+	public void setGameStage(EnumGameStage gameStage) {
+		this.gameStage = gameStage;
+	}
+
 	public Map<WorldSide, Field> getFields() {
 		return fields;
 	}
 
 	public Field getField(WorldSide side) {
 		return this.fields.get(side);
+	}
+
+	public void createField(WorldSide side) {
+		this.fields.put(side, new Field());
 	}
 
 	public void setReady(WorldSide side, boolean value) {

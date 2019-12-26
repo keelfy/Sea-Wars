@@ -8,6 +8,7 @@ import keelfy.sea_wars.common.network.packet.login.CPacketLoginStart;
 import keelfy.sea_wars.common.network.packet.login.SPacketLogged;
 import keelfy.sea_wars.common.network.packet.login.SPacketLogout;
 import keelfy.sea_wars.common.network.packet.play.server.SPacketJoinGame;
+import keelfy.sea_wars.common.world.WorldSide;
 import keelfy.sea_wars.server.SeaWarsServer;
 import keelfy.sea_wars.server.ServerPlayer;
 import keelfy.sea_wars.server.network.play.NetHandlerPlayServer;
@@ -67,9 +68,15 @@ public class NetHandlerLoginServer implements INetHandlerLoginServer {
 		}
 
 		this.loginState = LoginState.ACCEPTED;
-		this.networkManager.scheduleOutboundPacket(new SPacketLogged());
-		this.networkManager.setNetHandler(new NetHandlerPlayServer(server, networkManager, ServerPlayer.create(server, name)));
-		this.networkManager.scheduleOutboundPacket(new SPacketJoinGame(server.getWorld().getFreeSide()));
+		WorldSide freeSide = server.getWorld().getFreeSide();
+		server.getWorld().createField(freeSide);
+		this.networkManager.scheduleOutboundPacket(new SPacketLogged(freeSide));
+		ServerPlayer player = ServerPlayer.create(server, freeSide, name);
+		this.networkManager.setNetHandler(new NetHandlerPlayServer(server, networkManager, player));
+		for (ServerPlayer target : server.getPlayers()) {
+			target.getNetHandler().sendPacket(new SPacketJoinGame(name, freeSide));
+		}
+		server.getPlayers().add(player);
 	}
 
 	@Override

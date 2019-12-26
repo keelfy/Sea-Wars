@@ -63,6 +63,9 @@ public class ConnectingGUI extends BaseGUI {
 		switch (elementID) {
 			case 0 :
 				this.canceled = true;
+				if (this.networkManager != null) {
+					this.networkManager.closeChannel("Aborted");
+				}
 				break;
 		}
 	}

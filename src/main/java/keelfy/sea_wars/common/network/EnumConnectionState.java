@@ -16,9 +16,13 @@ import keelfy.sea_wars.common.network.packet.login.CPacketLoginStart;
 import keelfy.sea_wars.common.network.packet.login.SPacketLogged;
 import keelfy.sea_wars.common.network.packet.login.SPacketLogout;
 import keelfy.sea_wars.common.network.packet.play.client.CPacketAlive;
+import keelfy.sea_wars.common.network.packet.play.client.CPacketGameStage;
+import keelfy.sea_wars.common.network.packet.play.client.CPacketShipPlace;
 import keelfy.sea_wars.common.network.packet.play.server.SPacketAlive;
 import keelfy.sea_wars.common.network.packet.play.server.SPacketDisconnect;
+import keelfy.sea_wars.common.network.packet.play.server.SPacketGameStage;
 import keelfy.sea_wars.common.network.packet.play.server.SPacketJoinGame;
+import keelfy.sea_wars.common.network.packet.play.server.SPacketLeaveGame;
 import keelfy.sea_wars.common.network.packet.status.client.CPacketPing;
 import keelfy.sea_wars.common.network.packet.status.client.CPacketQuery;
 import keelfy.sea_wars.common.network.packet.status.server.SPacketInfo;
@@ -40,9 +44,13 @@ public enum EnumConnectionState {
 			this.addClientbound(0, SPacketAlive.class);
 			this.addClientbound(1, SPacketJoinGame.class);
 			this.addClientbound(2, SPacketDisconnect.class);
+			this.addClientbound(3, SPacketLeaveGame.class);
+			this.addClientbound(4, SPacketGameStage.class);
 
 			// Server
 			this.addServerbound(0, CPacketAlive.class);
+			this.addServerbound(1, CPacketGameStage.class);
+			this.addServerbound(2, CPacketShipPlace.class);
 		}
 	},
 	STATUS {

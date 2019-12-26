@@ -9,15 +9,15 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 
+import keelfy.sea_wars.client.gameplay.ClientPlayer;
 import keelfy.sea_wars.client.gui.GraphicalUI;
 import keelfy.sea_wars.client.gui.MainMenuGUI;
 import keelfy.sea_wars.client.gui.font.Fonts;
 import keelfy.sea_wars.client.input.KeyboardHandler;
 import keelfy.sea_wars.client.input.MouseHandler;
 import keelfy.sea_wars.client.main.Main;
-import keelfy.sea_wars.client.player.ClientPlayer;
+import keelfy.sea_wars.client.network.play.NetHandlerPlayClient;
 import keelfy.sea_wars.client.settings.SettingsHandler;
-import keelfy.sea_wars.common.network.NetworkManager;
 import keelfy.sea_wars.server.SeaWarsServer;
 
 /**
@@ -52,7 +52,7 @@ public final class SeaWars {
 
 	private String username;
 	private ClientPlayer player;
-	private NetworkManager networkManager;
+	private NetHandlerPlayClient netHandler;
 
 	public SeaWars() {
 		instance = this;
@@ -168,6 +168,10 @@ public final class SeaWars {
 		if (currentGUI != null) {
 			this.currentGUI.update();
 		}
+
+		if (this.netHandler != null && this.netHandler.getNetworkManager() != null) {
+			this.netHandler.getNetworkManager().processReceivedPackets();
+		}
 	}
 
 	/**
@@ -196,8 +200,8 @@ public final class SeaWars {
 	public void exit() {
 		logger.info("Exiting...");
 
-		if (this.networkManager != null) {
-			this.networkManager.closeChannel("Disconnect by user");
+		if (this.netHandler != null) {
+			this.netHandler.getNetworkManager().closeChannel("Disconnect by user");
 		}
 		this.displayHandler.close();
 	}
@@ -222,12 +226,12 @@ public final class SeaWars {
 		}
 	}
 
-	public void setNetworkManager(NetworkManager networkManager) {
-		this.networkManager = networkManager;
+	public NetHandlerPlayClient getNetHandler() {
+		return netHandler;
 	}
 
-	public NetworkManager getNetworkManager() {
-		return networkManager;
+	public void setNetHandler(NetHandlerPlayClient netHandler) {
+		this.netHandler = netHandler;
 	}
 
 	public DisplayHandler getDisplay() {

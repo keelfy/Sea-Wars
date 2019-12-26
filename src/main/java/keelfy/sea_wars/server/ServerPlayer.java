@@ -20,8 +20,7 @@ public class ServerPlayer extends Player {
 		this.ping = 0;
 	}
 
-	public static ServerPlayer create(SeaWarsServer server, String name) {
-		WorldSide side = server.getWorld().getFreeSide();
+	public static ServerPlayer create(SeaWarsServer server, WorldSide side, String name) {
 		ServerPlayer player = new ServerPlayer(name, side, server.getWorld());
 		return player;
 	}

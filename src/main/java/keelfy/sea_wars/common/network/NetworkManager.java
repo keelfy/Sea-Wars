@@ -24,7 +24,6 @@ import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.TimeoutException;
 import io.netty.util.AttributeKey;
 import io.netty.util.concurrent.GenericFutureListener;
-import keelfy.sea_wars.client.SeaWars;
 import keelfy.sea_wars.common.network.packet.Packet;
 import keelfy.sea_wars.common.network.util.MessageDeserializer;
 import keelfy.sea_wars.common.network.util.MessagePrepender;
@@ -125,7 +124,7 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
 			this.flushOutboundQueue();
 			this.dispatchPacket(packetToSend, listeners);
 		} else {
-			this.outboundPacketsQueue.add(new NetworkManager.InboundHandlerTuplePacketListener(packetToSend, listeners));
+			this.outboundPacketsQueue.add(new InboundHandlerTuplePacketListener(packetToSend, listeners));
 		}
 	}
 
@@ -168,8 +167,6 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
 		EnumConnectionState stateTo = this.channel.attr(attrKeyConnectionState).get();
 
 		if (this.connectionState != stateTo) {
-			SeaWars.getLogger().info(this.connectionState + " " + stateTo);
-
 			if (this.connectionState != null) {
 				this.netHandler.onConnectionStateTransition(this.connectionState, stateTo);
 			}
