@@ -7,7 +7,7 @@ import keelfy.sea_wars.client.SeaWars;
 import keelfy.sea_wars.client.gameplay.WorldClient;
 import keelfy.sea_wars.client.gui.elements.ButtonGUI;
 import keelfy.sea_wars.client.gui.ingame.PreparationGUI;
-import keelfy.sea_wars.client.gui.utils.GUIHelper;
+import keelfy.sea_wars.client.gui.utils.GuiHelper;
 import keelfy.sea_wars.common.world.Field;
 import keelfy.sea_wars.common.world.Field.CellState;
 import keelfy.sea_wars.common.world.WorldSide;
@@ -86,7 +86,7 @@ public class IngameGUI extends BaseGUI {
 		float fieldSize = Field.FIELD_SIZE * CELL_SIZE + Field.FIELD_SIZE - 1;
 		float posX = (screenWidth / 2 - fieldSize) / 2 + screenWidth / 2 * side.ordinal();
 
-		GUIHelper.drawRect(posX - 2, screenHeight / 2 - fieldSize / 2 - 2, fieldSize + 4, fieldSize + 4, Color.GRAY);
+		GuiHelper.drawRect(posX - 2, screenHeight / 2 - fieldSize / 2 - 2, fieldSize + 4, fieldSize + 4, Color.GRAY);
 
 		int[] pair = null;
 
@@ -106,16 +106,16 @@ public class IngameGUI extends BaseGUI {
 
 				switch (cellState) {
 					case NONE :
-						GUIHelper.drawRect(x + i, y + j, CELL_SIZE, CELL_SIZE, allowToHover && mouseOver ? Color.LIGHT_GRAY : Color.WHITE);
+						GuiHelper.drawRect(x + i, y + j, CELL_SIZE, CELL_SIZE, allowToHover && mouseOver ? Color.LIGHT_GRAY : Color.WHITE);
 						break;
 					case HIT :
-						GUIHelper.drawRect(x + i, y + j, CELL_SIZE, CELL_SIZE, allowToHover && mouseOver ? Color.LIGHT_GRAY : Color.RED);
+						GuiHelper.drawRect(x + i, y + j, CELL_SIZE, CELL_SIZE, allowToHover && mouseOver ? Color.LIGHT_GRAY : Color.RED);
 						break;
 					case MISS :
-						GUIHelper.drawRect(x + i, y + j, CELL_SIZE, CELL_SIZE, allowToHover && mouseOver ? Color.LIGHT_GRAY : Color.GREEN);
+						GuiHelper.drawRect(x + i, y + j, CELL_SIZE, CELL_SIZE, allowToHover && mouseOver ? Color.LIGHT_GRAY : Color.GREEN);
 						break;
 					case SHIP :
-						GUIHelper.drawRect(x + i, y + j, CELL_SIZE, CELL_SIZE, allowToHover && mouseOver ? Color.MAGENTA : Color.BLACK);
+						GuiHelper.drawRect(x + i, y + j, CELL_SIZE, CELL_SIZE, allowToHover && mouseOver ? Color.MAGENTA : Color.BLACK);
 						break;
 				}
 			}

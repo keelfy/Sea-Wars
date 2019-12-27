@@ -9,7 +9,7 @@ import keelfy.sea_wars.client.gameplay.WorldClient;
 import keelfy.sea_wars.client.gui.BaseGUI;
 import keelfy.sea_wars.client.gui.IngameGUI;
 import keelfy.sea_wars.client.gui.elements.ButtonGUI;
-import keelfy.sea_wars.client.gui.utils.GUIHelper;
+import keelfy.sea_wars.client.gui.utils.GuiHelper;
 import keelfy.sea_wars.common.network.packet.play.client.CPacketGameStage;
 import keelfy.sea_wars.common.world.EnumGameStage;
 import keelfy.sea_wars.common.world.Field;
@@ -86,7 +86,7 @@ public class PreparationGUI extends BaseGUI {
 
 		if (curentShip != null) {
 			double length = curentShip.getLength() * IngameGUI.CELL_SIZE + 2 * (curentShip.getLength() - 1);
-			GUIHelper.drawRect(mouseX, mouseY, !shipVertically ? length : IngameGUI.CELL_SIZE, shipVertically ? length : IngameGUI.CELL_SIZE, Color.BLACK);
+			GuiHelper.drawRect(mouseX, mouseY, !shipVertically ? length : IngameGUI.CELL_SIZE, shipVertically ? length : IngameGUI.CELL_SIZE, Color.BLACK);
 		}
 	}
 

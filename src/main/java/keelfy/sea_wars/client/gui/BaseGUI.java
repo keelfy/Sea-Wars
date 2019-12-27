@@ -5,7 +5,7 @@ import java.util.List;
 
 import keelfy.sea_wars.client.SeaWars;
 import keelfy.sea_wars.client.gui.elements.IElementGUI;
-import keelfy.sea_wars.client.gui.utils.GUIHelper;
+import keelfy.sea_wars.client.gui.utils.GuiHelper;
 
 /**
  * @author keelfy
@@ -39,7 +39,7 @@ public abstract class BaseGUI implements GraphicalUI {
 	}
 
 	protected void drawDefaultBackground() {
-		GUIHelper.drawFullscreenRect(screenWidth, screenHeight, GUIHelper.BACKGROUND_COLOR);
+		GuiHelper.drawFullscreenRect(screenWidth, screenHeight, GuiHelper.BACKGROUND_COLOR);
 	}
 
 	@Override

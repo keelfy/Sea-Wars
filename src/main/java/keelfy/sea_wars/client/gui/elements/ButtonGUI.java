@@ -3,16 +3,16 @@ package keelfy.sea_wars.client.gui.elements;
 import java.awt.Color;
 
 import keelfy.sea_wars.client.gui.font.Fonts;
-import keelfy.sea_wars.client.gui.utils.GUIHelper;
+import keelfy.sea_wars.client.gui.utils.GuiHelper;
 
 /**
  * @author keelfy
  */
 public class ButtonGUI implements IElementGUI {
 
-	public static final Color HOVER_COLOR = GUIHelper.getColor("#1C9DE8");
-	public static final Color COLOR = GUIHelper.getColor("#005AC7");
-	public static final Color HOVER_TEXT = GUIHelper.getColor("#EFFA57");
+	public static final Color HOVER_COLOR = GuiHelper.getColor("#1C9DE8");
+	public static final Color COLOR = GuiHelper.getColor("#005AC7");
+	public static final Color HOVER_TEXT = GuiHelper.getColor("#EFFA57");
 	public static final Color TEXT = Color.BLACK;
 
 	private int id;
@@ -46,7 +46,7 @@ public class ButtonGUI implements IElementGUI {
 	public void draw(double mouseX, double mouseY) {
 		boolean mouseOver = isMouseOver(mouseX, mouseY);
 
-		GUIHelper.drawRect(x, y, width, height, getColor(mouseOver));
+		GuiHelper.drawRect(x, y, width, height, getColor(mouseOver));
 		Fonts.drawCenteredString(text, x + width / 2, y + 4, enabled && mouseOver ? HOVER_TEXT : Color.WHITE);
 	}
 

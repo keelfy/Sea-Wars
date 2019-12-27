@@ -5,9 +5,9 @@ import java.awt.Color;
 /**
  * @author keelfy
  */
-public class GUIHelper {
+public class GuiHelper {
 
-	public static final Color BACKGROUND_COLOR = GUIHelper.getColor("#FFFFFF");
+	public static final Color BACKGROUND_COLOR = GuiHelper.getColor("#FFFFFF");
 
 	public static void drawRect(double x, double y, double width, double height, Color color) {
 		Drawer drawer = new Drawer();
