@@ -31,6 +31,17 @@ repositories {
     }
 }
 
+task runClient (dependsOn: 'classes', type: JavaExec) {
+    main = 'keelfy.sea_wars.client.main.Main'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+task runServer (dependsOn: 'classes', type: JavaExec) {
+    main = 'keelfy.sea_wars.server.main.Main'
+    standardInput = System.in
+    classpath = sourceSets.main.runtimeClasspath
+}
+
 dependencies {
     compile 'org.lwjgl:lwjgl:3.2.3-SNAPSHOT'
     compile 'org.lwjgl:lwjgl-glfw:3.2.3-SNAPSHOT'

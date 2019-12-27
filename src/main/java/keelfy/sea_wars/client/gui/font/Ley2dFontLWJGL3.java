@@ -17,7 +17,7 @@ import static org.lwjgl.opengl.GL11.glTexImage2D;
 import static org.lwjgl.opengl.GL11.glTexParameteri;
 import static org.lwjgl.opengl.GL11.glVertex3f;
 
-import java.net.URL;
+import java.io.File;
 import java.nio.ByteBuffer;
 
 import org.lwjgl.opengl.GL11;
@@ -30,8 +30,8 @@ public class Ley2dFontLWJGL3 {
 	private Ley2dFontUtilAwt fontUtil;
 	private int fontTextureId;
 
-	Ley2dFontLWJGL3(URL ttfFilename) throws Throwable {
-		fontUtil = new Ley2dFontUtilAwt(ttfFilename, 20);
+	Ley2dFontLWJGL3(File ttfFile) throws Throwable {
+		fontUtil = new Ley2dFontUtilAwt(ttfFile, 20);
 		generateTexture(fontUtil.getFontAsByteBuffer());
 	}
 

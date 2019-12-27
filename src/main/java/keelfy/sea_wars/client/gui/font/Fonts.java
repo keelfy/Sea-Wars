@@ -1,10 +1,9 @@
 package keelfy.sea_wars.client.gui.font;
 
 import java.awt.Color;
+import java.io.File;
 
 import org.lwjgl.opengl.GL11;
-
-import keelfy.sea_wars.client.SeaWars;
 
 /**
  * @author keelfy
@@ -16,7 +15,7 @@ public class Fonts {
 
 	public static void create() {
 		try {
-			monofonto = new Ley2dFontLWJGL3(SeaWars.class.getResource("monofonto.ttf"));
+			monofonto = new Ley2dFontLWJGL3(new File("./fonts", "monofonto.ttf"));
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}

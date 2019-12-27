@@ -1,10 +1,18 @@
 package keelfy.sea_wars.server;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -33,6 +41,7 @@ public class SeaWarsServer {
 
 	private int port;
 	private final NetworkSystem network;
+	private Set<String> commandsToExecute;
 
 	private World world;
 	private List<ServerPlayer> players;
@@ -43,6 +52,7 @@ public class SeaWarsServer {
 		this.port = port;
 		this.network = new NetworkSystem(this);
 		this.players = new ArrayList<ServerPlayer>();
+		this.commandsToExecute = ConcurrentHashMap.newKeySet();
 	}
 
 	public void run() {
@@ -88,7 +98,11 @@ public class SeaWarsServer {
 	}
 
 	public boolean start() throws UnknownHostException {
-		PropertyConfigurator.configure(SeaWarsServer.class.getResourceAsStream("../log4j.properties"));
+		try {
+			PropertyConfigurator.configure(new FileInputStream(new File("./config/", "log4j.properties")));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 
 		this.world = new World();
 
@@ -102,10 +116,38 @@ public class SeaWarsServer {
 			return false;
 		}
 
+		Thread consoleReader = new Thread("Console reader") {
+			@Override
+			public void run() {
+				BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+				String line;
+
+				try {
+					while (serverRunning && (line = reader.readLine()) != null) {
+						commandsToExecute.add(line);
+					}
+				} catch (IOException e) {
+					logger.error("Exception handling console input", e);
+				}
+			}
+		};
+		consoleReader.setDaemon(true);
+		consoleReader.start();
+
 		return true;
 	}
 
 	public void tick() {
+		Iterator<String> it = this.commandsToExecute.iterator();
+		while (it.hasNext()) {
+			String command = it.next();
+			if (command.contains("stop")) {
+				logger.info("Server stopped!");
+				this.setServerRunning(false);
+			}
+			it.remove();
+		}
+
 		if (this.getNetwork() != null) {
 			this.getNetwork().networkTick();
 		}

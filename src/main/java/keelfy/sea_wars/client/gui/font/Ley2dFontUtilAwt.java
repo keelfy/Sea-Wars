@@ -11,7 +11,6 @@ import java.awt.RenderingHints;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,8 +34,8 @@ public class Ley2dFontUtilAwt {
 	private Font font;
 	private FontMetrics fontMetrics;
 
-	public Ley2dFontUtilAwt(URL ttfFilename, int fontSize) throws Throwable {
-		this.loadFont(ttfFilename, fontSize);
+	public Ley2dFontUtilAwt(File ttfFile, int fontSize) throws Throwable {
+		this.loadFont(ttfFile, fontSize);
 	}
 
 	public ByteBuffer getFontAsByteBuffer() {
@@ -131,9 +130,9 @@ public class Ley2dFontUtilAwt {
 		return imageData;
 	}
 
-	private void loadFont(URL ttfFilename, int fontSize) throws Throwable {
+	private void loadFont(File ttfFile, int fontSize) throws Throwable {
 		try {
-			font = Font.createFont(java.awt.Font.TRUETYPE_FONT, new File(ttfFilename.toURI())).deriveFont(DEFAULT_FONT_SIZE);
+			font = Font.createFont(java.awt.Font.TRUETYPE_FONT, ttfFile).deriveFont(DEFAULT_FONT_SIZE);
 		} catch (FontFormatException ex) {
 			throw new Exception("Font is not a TTF!");
 		}

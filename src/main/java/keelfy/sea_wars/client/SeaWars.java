@@ -1,6 +1,8 @@
 package keelfy.sea_wars.client;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -18,7 +20,6 @@ import keelfy.sea_wars.client.input.MouseHandler;
 import keelfy.sea_wars.client.main.Main;
 import keelfy.sea_wars.client.network.play.NetHandlerPlayClient;
 import keelfy.sea_wars.client.settings.SettingsHandler;
-import keelfy.sea_wars.server.SeaWarsServer;
 
 /**
  * @author keelfy
@@ -56,7 +57,7 @@ public final class SeaWars {
 
 	public SeaWars() {
 		instance = this;
-		dataFolder = new File("");
+		dataFolder = new File(".");
 
 		this.displayHandler = new DisplayHandler();
 		this.settingsHandler = new SettingsHandler(dataFolder);
@@ -71,7 +72,11 @@ public final class SeaWars {
 	 * Called from {@link Main}
 	 */
 	public void start() {
-		PropertyConfigurator.configure(SeaWarsServer.class.getResourceAsStream("../log4j.properties"));
+		try {
+			PropertyConfigurator.configure(new FileInputStream(new File(dataFolder, "config" + File.separator + "log4j.properties")));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 
 		GLFWErrorCallback.createPrint(System.err).set();
 
