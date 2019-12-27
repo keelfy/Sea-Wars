@@ -60,12 +60,12 @@ public class NetHandlerLoginServer implements INetHandlerLoginServer {
 			return;
 		}
 
-		for (ServerPlayer player : server.getPlayers()) {
-			if (player.getName().equals(name)) {
-				terminate("Player with your username already playing!");
-				return;
-			}
-		}
+		// for (ServerPlayer player : server.getPlayers()) {
+		// if (player.getName().equals(name)) {
+		// terminate("Player with your username already playing!");
+		// return;
+		// }
+		// }
 
 		this.loginState = LoginState.ACCEPTED;
 		WorldSide freeSide = server.getWorld().getFreeSide();
