@@ -93,7 +93,6 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
 		this.channel.attr(attrKeyReceivable).set(state.getPacketsFromClient(clientSide));
 		this.channel.attr(attrKeySendable).set(state.getPacketsFromServer(clientSide));
 		this.channel.config().setAutoRead(true);
-		logger.debug("Enabled auto read");
 	}
 
 	@Override
@@ -133,7 +132,6 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
 		final EnumConnectionState state1 = this.channel.attr(attrKeyConnectionState).get();
 
 		if (state1 != state) {
-			logger.debug("Disabled auto read");
 			this.channel.config().setAutoRead(false);
 		}
 

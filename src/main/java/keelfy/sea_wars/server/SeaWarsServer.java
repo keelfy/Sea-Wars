@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import keelfy.sea_wars.common.world.World;
+import keelfy.sea_wars.common.world.WorldSide;
 import keelfy.sea_wars.server.network.NetworkSystem;
 
 /**
@@ -173,6 +174,15 @@ public class SeaWarsServer {
 
 	public World getWorld() {
 		return world;
+	}
+
+	public ServerPlayer getPlayerBySide(WorldSide side) {
+		for (ServerPlayer player : players) {
+			if (player.getSide() == side) {
+				return player;
+			}
+		}
+		return null;
 	}
 
 	public NetworkSystem getNetwork() {

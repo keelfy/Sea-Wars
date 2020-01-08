@@ -3,6 +3,7 @@ package keelfy.sea_wars.common.network.packet.play.server;
 import java.io.IOException;
 
 import keelfy.sea_wars.client.network.play.INetHandlerPlayClient;
+import keelfy.sea_wars.client.network.play.NetHandlerPlayClient;
 import keelfy.sea_wars.common.network.INetHandler;
 import keelfy.sea_wars.common.network.packet.Packet;
 import keelfy.sea_wars.common.network.packet.PacketBuffer;
@@ -46,6 +47,6 @@ public class SPacketGameStage extends Packet {
 
 	@Override
 	public void processPacket(INetHandler netHandler) {
-		this.processPacket(netHandler);
+		this.processPacket((NetHandlerPlayClient) netHandler);
 	}
 }

@@ -5,4 +5,8 @@ package keelfy.sea_wars.common.world;
  */
 public enum WorldSide {
 	LEFT, RIGHT;
+
+	public WorldSide getOpposite() {
+		return this == LEFT ? RIGHT : LEFT;
+	}
 }

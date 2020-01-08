@@ -28,7 +28,29 @@ public class Field {
 		cells[i][j] = state;
 	}
 
+	public int countHits() {
+		int count = 0;
+		for (int i = 0; i < FIELD_SIZE; i++) {
+			for (int j = 0; j < FIELD_SIZE; j++) {
+				if (cells[i][j] == CellState.HIT) {
+					++count;
+				}
+			}
+		}
+		return count;
+	}
+
 	public static enum CellState {
 		SHIP, HIT, MISS, NONE;
+
+		public CellState getBaseState() {
+			if (this == HIT)
+				return SHIP;
+
+			if (this == MISS)
+				return NONE;
+
+			return this;
+		}
 	}
 }

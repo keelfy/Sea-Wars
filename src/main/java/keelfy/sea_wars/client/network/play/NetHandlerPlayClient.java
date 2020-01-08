@@ -14,10 +14,15 @@ import keelfy.sea_wars.common.network.NetworkManager;
 import keelfy.sea_wars.common.network.packet.Packet;
 import keelfy.sea_wars.common.network.packet.play.client.CPacketAlive;
 import keelfy.sea_wars.common.network.packet.play.server.SPacketAlive;
+import keelfy.sea_wars.common.network.packet.play.server.SPacketAttackResponse;
 import keelfy.sea_wars.common.network.packet.play.server.SPacketDisconnect;
 import keelfy.sea_wars.common.network.packet.play.server.SPacketGameStage;
 import keelfy.sea_wars.common.network.packet.play.server.SPacketJoinGame;
 import keelfy.sea_wars.common.network.packet.play.server.SPacketLeaveGame;
+import keelfy.sea_wars.common.network.packet.play.server.SPacketMove;
+import keelfy.sea_wars.common.network.packet.play.server.SPacketTheEnd;
+import keelfy.sea_wars.common.world.Field.CellState;
+import keelfy.sea_wars.common.world.WorldSide;
 
 /**
  * @author keelfy
@@ -70,8 +75,30 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient {
 
 	@Override
 	public void handleGameStage(SPacketGameStage packet) {
-		sw.getPlayer().getWorld().setGameStage(packet.getGameStage());
+		sw.getWorld().setGameStage(packet.getGameStage());
 		sw.openGUI(new IngameGUI(sw));
+	}
+
+	@Override
+	public void handleTheEnd(SPacketTheEnd packet) {
+		sw.getWorld().setWinner(packet.getWinner());
+		sw.getWorld().setFields(packet.getFields());
+	}
+
+	@Override
+	public void handleMove(SPacketMove packet) {
+		sw.getWorld().setSideOfMove(packet.getSide());
+		sw.getCurrentGUI().init();
+	}
+
+	@Override
+	public void handleAttackResponse(SPacketAttackResponse packet) {
+		WorldSide sideOn = packet.getSide();
+		int x = packet.getX();
+		int y = packet.getY();
+		CellState state = packet.getState();
+
+		sw.getWorld().getField(sideOn).setCellState(x, y, state);
 	}
 
 	@Override

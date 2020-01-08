@@ -22,7 +22,7 @@ public class SPacketLogout extends Packet {
 
 	@Override
 	public void readPacketData(PacketBuffer packetBuffer) throws IOException {
-		this.reason = packetBuffer.readStringFromBuffer(Short.MAX_VALUE - 1);
+		this.reason = packetBuffer.readStringFromBuffer(256);
 	}
 
 	@Override

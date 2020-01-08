@@ -22,7 +22,7 @@ public class CPacketLoginStart extends Packet {
 
 	@Override
 	public void readPacketData(PacketBuffer buffer) throws IOException {
-		this.name = buffer.readStringFromBuffer(Short.MAX_VALUE);
+		this.name = buffer.readStringFromBuffer(256);
 	}
 
 	@Override

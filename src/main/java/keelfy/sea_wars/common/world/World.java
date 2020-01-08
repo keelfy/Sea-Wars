@@ -9,16 +9,19 @@ import java.util.Map;
  */
 public class World {
 
-	private EnumGameStage gameStage;
-	private Map<WorldSide, Field> fields;
+	protected EnumGameStage gameStage;
+	protected Map<WorldSide, Field> fields;
 
-	private boolean[] ready;
+	protected boolean[] ready;
+
+	protected WorldSide sideOfMove;
 
 	public World() {
 		this.gameStage = EnumGameStage.PREPARATION;
 		this.fields = new HashMap<WorldSide, Field>();
 		this.ready = new boolean[WorldSide.values().length];
 		Arrays.fill(ready, false);
+		this.sideOfMove = WorldSide.LEFT;
 	}
 
 	public WorldSide getFreeSide() {
@@ -59,5 +62,17 @@ public class World {
 				return false;
 		}
 		return true;
+	}
+
+	public WorldSide getSideOfMove() {
+		return sideOfMove;
+	}
+
+	public void setSideOfMove(WorldSide side) {
+		this.sideOfMove = side;
+	}
+
+	public void moveHappend() {
+		this.sideOfMove = sideOfMove.getOpposite();
 	}
 }

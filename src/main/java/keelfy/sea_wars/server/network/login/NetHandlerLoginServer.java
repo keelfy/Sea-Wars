@@ -60,22 +60,28 @@ public class NetHandlerLoginServer implements INetHandlerLoginServer {
 			return;
 		}
 
-		// for (ServerPlayer player : server.getPlayers()) {
-		// if (player.getName().equals(name)) {
-		// terminate("Player with your username already playing!");
-		// return;
-		// }
-		// }
+		for (ServerPlayer player : server.getPlayers()) {
+			if (player.getName().equals(name)) {
+				terminate("Player with your username already playing!");
+				return;
+			}
+		}
 
 		this.loginState = LoginState.ACCEPTED;
 		WorldSide freeSide = server.getWorld().getFreeSide();
+
 		server.getWorld().createField(freeSide);
+
 		this.networkManager.scheduleOutboundPacket(new SPacketLogged(freeSide));
+
 		ServerPlayer player = ServerPlayer.create(server, freeSide, name);
 		this.networkManager.setNetHandler(new NetHandlerPlayServer(server, networkManager, player));
+		this.networkManager.setConnectionState(EnumConnectionState.PLAY);
+
 		for (ServerPlayer target : server.getPlayers()) {
 			target.getNetHandler().sendPacket(new SPacketJoinGame(name, freeSide));
 		}
+
 		server.getPlayers().add(player);
 	}
 

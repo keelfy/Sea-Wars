@@ -9,9 +9,10 @@ import keelfy.sea_wars.client.gameplay.WorldClient;
 import keelfy.sea_wars.client.gui.BaseGUI;
 import keelfy.sea_wars.client.gui.IngameGUI;
 import keelfy.sea_wars.client.gui.elements.ButtonGUI;
+import keelfy.sea_wars.client.gui.font.Fonts;
 import keelfy.sea_wars.client.gui.utils.GuiHelper;
-import keelfy.sea_wars.common.network.packet.play.client.CPacketGameStage;
-import keelfy.sea_wars.common.world.EnumGameStage;
+import keelfy.sea_wars.common.network.packet.play.client.CPacketReady;
+import keelfy.sea_wars.common.network.packet.play.client.CPacketShipPlace;
 import keelfy.sea_wars.common.world.Field;
 import keelfy.sea_wars.common.world.Field.CellState;
 import keelfy.sea_wars.common.world.WorldSide;
@@ -54,7 +55,7 @@ public class PreparationGUI extends BaseGUI {
 
 		this.elements.add(readyButton = new ButtonGUI(5, "Ready", screenWidth / 2 - 200, screenHeight - 60, 400, 50));
 		this.readyButton.setEnabled(shipsAmount == 0);
-		this.readyButton.setEnabled(!ready);
+		this.readyButton.setEnabled(shipsAmount <= 0 && !ready);
 
 		for (EnumShipType type : EnumShipType.values()) {
 			String name = type.name() + ": " + shipsRemained[type.ordinal()];
@@ -74,13 +75,15 @@ public class PreparationGUI extends BaseGUI {
 		WorldClient world = sw.getPlayer().getWorld();
 		WorldSide mySide = sw.getPlayer().getSide();
 
-		int[] cellMouseOver = parent.drawField(mouseX, mouseY, WorldSide.LEFT, world.getField(mySide), true);
+		int[] cellMouseOver = parent.drawField(mouseX, mouseY, null, world.getField(mySide), true);
 		if (cellMouseOver == null) {
 			cellMouseOverX = cellMouseOverY = -1;
 		} else {
 			cellMouseOverX = cellMouseOver[0];
 			cellMouseOverY = cellMouseOver[1];
 		}
+
+		Fonts.drawCenteredString(ready ? "Waiting for second player" : "Use R button to rotate ship", screenWidth / 2, 70, ButtonGUI.TEXT);
 
 		super.draw(mouseX, mouseY);
 
@@ -104,6 +107,11 @@ public class PreparationGUI extends BaseGUI {
 		if (curentShip != null && cellMouseOverX != -1 && cellMouseOverY != -1) {
 			int lengthX = !shipVertically ? curentShip.getLength() : 1;
 			int lengthY = shipVertically ? curentShip.getLength() : 1;
+
+			if (cellMouseOverX + lengthX > 10 || cellMouseOverY + lengthY > 10)
+				return false;
+
+			sw.getNetHandler().sendPacket(new CPacketShipPlace(cellMouseOverX, cellMouseOverY, curentShip, shipVertically));
 
 			for (int i = cellMouseOverX - 1; i < cellMouseOverX + lengthX + 1; i++) {
 				for (int j = cellMouseOverY - 1; j < cellMouseOverY + lengthY + 1; j++) {
@@ -158,7 +166,7 @@ public class PreparationGUI extends BaseGUI {
 				parent.actionPerfomed(0, 0);
 				break;
 			case 5 :
-				sw.getNetHandler().sendPacket(new CPacketGameStage(EnumGameStage.READY));
+				sw.getNetHandler().sendPacket(new CPacketReady(sw.getPlayer().getSide()));
 				ready = true;
 				readyButton.setEnabled(false);
 				break;

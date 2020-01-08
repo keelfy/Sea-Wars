@@ -1,11 +1,11 @@
 package keelfy.sea_wars.client.gui;
 
 import java.awt.Color;
-import java.util.Map;
 
 import keelfy.sea_wars.client.SeaWars;
 import keelfy.sea_wars.client.gameplay.WorldClient;
 import keelfy.sea_wars.client.gui.elements.ButtonGUI;
+import keelfy.sea_wars.client.gui.font.Fonts;
 import keelfy.sea_wars.client.gui.ingame.PreparationGUI;
 import keelfy.sea_wars.client.gui.utils.GuiHelper;
 import keelfy.sea_wars.common.world.Field;
@@ -42,53 +42,30 @@ public class IngameGUI extends BaseGUI {
 			case PREPARATION :
 				sw.openGUI(new PreparationGUI(sw, this));
 				break;
-			case READY :
-				drawReady(world, mouseX, mouseY);
-				break;
 			case PROCCESS :
-				drawProccess(world, mouseX, mouseY);
+				sw.openGUI(new ProccessGUI(sw, this));
 				break;
 			case THE_END :
-				drawEnd(world, mouseX, mouseY);
+				sw.openGUI(new TheEndGUI(sw, this));
 				break;
 		}
 
 		super.draw(mouseX, mouseY);
 	}
 
-	private void drawPreparation(WorldClient world, double mouseX, double mouseY) {
-		WorldSide mySide = sw.getPlayer().getSide();
-
-		drawField(mouseX, mouseY, mySide, world.getField(mySide), true);
-
-	}
-
-	private void drawReady(WorldClient world, double mouseX, double mouseY) {
-
-	}
-
-	private void drawProccess(WorldClient world, double mouseX, double mouseY) {
-		Map<WorldSide, Field> fields = world.getFields();
-
-		for (WorldSide side : WorldSide.values()) {
-			if (fields.containsKey(side)) {
-				drawField(mouseX, mouseY, side, fields.get(side), true);
-			}
-		}
-	}
-
-	private void drawEnd(WorldClient world, double mouseX, double mouseY) {
-
-	}
-
 	public int[] drawField(double mouseX, double mouseY, WorldSide side, Field field, boolean allowToHover) {
 		CellState[][] states = field.getCells();
 		float fieldSize = Field.FIELD_SIZE * CELL_SIZE + Field.FIELD_SIZE - 1;
-		float posX = (screenWidth / 2 - fieldSize) / 2 + screenWidth / 2 * side.ordinal();
+		float posX = (screenWidth / 2 - fieldSize) / 2 + screenWidth / 2 * (side == null ? WorldSide.LEFT : side).ordinal();
 
 		GuiHelper.drawRect(posX - 2, screenHeight / 2 - fieldSize / 2 - 2, fieldSize + 4, fieldSize + 4, Color.GRAY);
 
 		int[] pair = null;
+
+		if (side != null) {
+			Fonts.drawCenteredString(side == sw.getPlayer().getSide() ? "You" : "Enemy", posX + fieldSize / 2 + 2, screenHeight / 2 - fieldSize / 2 - 45,
+					side == sw.getPlayer().getSide() ? Color.GREEN : Color.RED);
+		}
 
 		for (int i = 0; i < Field.FIELD_SIZE; i++) {
 			for (int j = 0; j < Field.FIELD_SIZE; j++) {
@@ -112,7 +89,7 @@ public class IngameGUI extends BaseGUI {
 						GuiHelper.drawRect(x + i, y + j, CELL_SIZE, CELL_SIZE, allowToHover && mouseOver ? Color.LIGHT_GRAY : Color.RED);
 						break;
 					case MISS :
-						GuiHelper.drawRect(x + i, y + j, CELL_SIZE, CELL_SIZE, allowToHover && mouseOver ? Color.LIGHT_GRAY : Color.GREEN);
+						GuiHelper.drawRect(x + i, y + j, CELL_SIZE, CELL_SIZE, allowToHover && mouseOver ? Color.LIGHT_GRAY : Color.DARK_GRAY);
 						break;
 					case SHIP :
 						GuiHelper.drawRect(x + i, y + j, CELL_SIZE, CELL_SIZE, allowToHover && mouseOver ? Color.MAGENTA : Color.BLACK);

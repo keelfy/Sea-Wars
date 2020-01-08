@@ -5,34 +5,38 @@ import java.io.IOException;
 import keelfy.sea_wars.common.network.INetHandler;
 import keelfy.sea_wars.common.network.packet.Packet;
 import keelfy.sea_wars.common.network.packet.PacketBuffer;
-import keelfy.sea_wars.common.world.EnumGameStage;
 import keelfy.sea_wars.server.network.play.INetHandlerPlayServer;
+import keelfy.sea_wars.server.network.play.NetHandlerPlayServer;
 
 /**
  * @author keelfy
  */
-public class CPacketGameStage extends Packet {
+public class CPacketAttack extends Packet {
 
-	private EnumGameStage gameStage;
+	private int x;
+	private int y;
 
-	public CPacketGameStage() {}
+	public CPacketAttack() {}
 
-	public CPacketGameStage(EnumGameStage gameStage) {
-		this.gameStage = gameStage;
+	public CPacketAttack(int x, int y) {
+		this.x = x;
+		this.y = y;
 	}
 
 	public void processPacket(INetHandlerPlayServer netHandler) {
-		netHandler.handleGameStage(this);
+		netHandler.handleAttack(this);
 	}
 
 	@Override
 	public void readPacketData(PacketBuffer buffer) throws IOException {
-		this.gameStage = EnumGameStage.values()[buffer.readVarIntFromBuffer()];
+		this.x = buffer.readVarIntFromBuffer();
+		this.y = buffer.readVarIntFromBuffer();
 	}
 
 	@Override
 	public void writePacketData(PacketBuffer buffer) throws IOException {
-		buffer.writeVarIntToBuffer(this.gameStage.ordinal());
+		buffer.writeVarIntToBuffer(x);
+		buffer.writeVarIntToBuffer(y);
 	}
 
 	@Override
@@ -40,12 +44,16 @@ public class CPacketGameStage extends Packet {
 		return true;
 	}
 
-	public EnumGameStage getGameStage() {
-		return gameStage;
+	public int getX() {
+		return x;
+	}
+
+	public int getY() {
+		return y;
 	}
 
 	@Override
 	public void processPacket(INetHandler netHandler) {
-		this.processPacket((INetHandlerPlayServer) netHandler);
+		this.processPacket((NetHandlerPlayServer) netHandler);
 	}
 }

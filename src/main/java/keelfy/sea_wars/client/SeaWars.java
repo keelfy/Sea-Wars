@@ -3,6 +3,7 @@ package keelfy.sea_wars.client;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.Random;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -12,6 +13,7 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 
 import keelfy.sea_wars.client.gameplay.ClientPlayer;
+import keelfy.sea_wars.client.gameplay.WorldClient;
 import keelfy.sea_wars.client.gui.GraphicalUI;
 import keelfy.sea_wars.client.gui.MainMenuGUI;
 import keelfy.sea_wars.client.gui.font.Fonts;
@@ -55,6 +57,8 @@ public final class SeaWars {
 	private ClientPlayer player;
 	private NetHandlerPlayClient netHandler;
 
+	public static final Random rand = new Random();
+
 	public SeaWars() {
 		instance = this;
 		dataFolder = new File(".");
@@ -65,7 +69,8 @@ public final class SeaWars {
 		this.mouseHandler = new MouseHandler(this);
 
 		String param = System.getProperty("username");
-		this.username = param == null ? "Player" : param;
+		this.username = param == null ? "Player" + rand.nextInt(999) : param;
+		logger.info("Username: " + username);
 	}
 
 	/**
@@ -261,6 +266,10 @@ public final class SeaWars {
 
 	public ClientPlayer getPlayer() {
 		return player;
+	}
+
+	public WorldClient getWorld() {
+		return player.getWorld();
 	}
 
 	public String getUsername() {
